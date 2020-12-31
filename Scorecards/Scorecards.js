@@ -1,6 +1,7 @@
 // const db = require('./database');
 // const {sql} = require('@databases/pg');
 const Pool = require('pg').Pool
+const camelcaseKeys = require('camelcase-keys')
 const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
@@ -10,11 +11,11 @@ const pool = new Pool({
 })
 
 const fetchAllScoreCards = (request, response) => {
-    pool.query('SELECT id,title,ticketid,status FROM audipilot.scorecards ORDER BY id ASC', (error, results) => {
+    pool.query('SELECT id,title,ticket_id,status FROM audipilot.scorecards ORDER BY id ASC', (error, results) => {
         if (error) {
             throw error
         }
-        response.status(200).json(results.rows)
+        response.status(200).json(camelcaseKeys(results.rows))
     })
 }
 const getScoreCardbyId = (request, response) => {
@@ -25,14 +26,14 @@ const getScoreCardbyId = (request, response) => {
         if (error) {
             throw error
         }
-        response.status(200).json(results.rows)
+        response.status(200).json(camelcaseKeys(results.rows))
         console.log(`response returned for score card id ${scorecardid}`)
     })
 }
 const createScoreCarddummy = (request, response) => {
-    const { scorecardtitle, ticketid, agentname, ticketdate, totalweightage, sectionsdata } = request.body
+    const { scorecardTitle, ticketId, agentName, ticketDate, totalWeightage, sectionsData } = request.body
     console.log(`${scorecardtitle}.,${agentname}.,${sectionsdata}.`)
-    pool.query('INSERT INTO audipilot.scorecards (title,ticketid, agentname,ticketdate,totalweightage,sectionsdata) VALUES ($1, $2,$3,$4, $5,$6)', [scorecardtitle, ticketid, agentname, ticketdate, totalweightage, sectionsdata], (error, results) => {
+    pool.query('INSERT INTO audipilot.scorecards (title,ticket_id, agent_name,ticket_date,total_weightage,sections_data) VALUES ($1, $2,$3,$4, $5,$6)', [scorecardTitle, ticketId, agentName, ticketDate, totalWeightage, sectionsData], (error, results) => {
         if (error) {
             throw error
         }
@@ -95,7 +96,7 @@ function updateScoreCardByNameQuery(card) {
     // and assigning a number value for parameterized query
     var set = [];
     Object.keys(card).forEach(function (key, i) {
-        set.push(key + ' = ($' + (i + 1) + ')');
+        set.push(camel_to_snake(key) + ' = ($' + (i + 1) + ')');
     });
     query.push(set.join(', '));
 
@@ -105,6 +106,10 @@ function updateScoreCardByNameQuery(card) {
     // Return a complete query string
     return query.join(' ');
 }
+function camel_to_snake (str){
+    return str[0].toLowerCase() + str.slice(1, str.length).replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+} 
+    
 function insertScoreCardQuery(card) {
     // Setup static beginning of query
     var query = ['insert into audipilot.scorecards( '];
@@ -115,7 +120,9 @@ function insertScoreCardQuery(card) {
     var set = [];
     var ref=[];
     Object.keys(card).forEach(function (key, i) {
-        set.push(key);
+       console.log('Key recieved ',key)
+      
+        set.push(camel_to_snake(key));
         ref.push(' $' + (i + 1) ); 
     });
     query.push(set.join(', '));

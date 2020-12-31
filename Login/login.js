@@ -1,5 +1,6 @@
 // const dbpool  = require('../Server/configurations')
 const Pool = require('pg').Pool
+const camelcaseKeys = require('camelcase-keys')
 const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
@@ -12,7 +13,7 @@ const getUsers = (request, response) => {
         if (error) {
             throw error
         }
-        response.status(200).json(results.rows)
+        camelcaseKeys(response.status(200).json(camelcaseKeys(results.rows)))
     })
 }
 const authenticateUser = (request, response) => {
@@ -28,7 +29,7 @@ const authenticateUser = (request, response) => {
             console.log(pool.query.toString);
             throw error
         }
-        response.status(200).json(results.rows)
+        camelcaseKeys(response.status(200).json(results.rows))
     })
 }
 module.exports = {

@@ -4,6 +4,7 @@ const app = express()
 const lg = require('./Login/login')
 const scorecard=require('./Scorecards/Scorecards')
 const cors = require('cors')
+const camelcaseKeys = require('camelcase-keys');
 const port = 7777
 
 app.use(bodyParser.json())
@@ -17,14 +18,14 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/',(request,response)=>{
-    response.json({info:"Node.js, Express, and Postgress API"})
+  camelcaseKeys(response.json({info:"Node.js, Express, and Postgress API"}))
 })
 // get user details , all user detiails and user authentication
-app.get('/getAllUsers', lg.getUsers)
+app.get('/get-all-users', lg.getUsers)
 app.post('/authenticate-user',lg.authenticateUser)
 
 // fetch, fetchall, create and update score card services
-app.get('/all-score-cards',scorecard.fetchAllScoreCards)
+app.get('/all-score-cards',(scorecard.fetchAllScoreCards))
 app.get('/score-card-byid/:id',scorecard.getScoreCardbyId)
 app.post('/create-score-card',scorecard.createScoreCard)
 app.put('/update-score-card',scorecard.updateScoreCard)
