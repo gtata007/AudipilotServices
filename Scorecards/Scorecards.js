@@ -49,6 +49,7 @@ const createScoreCard = (request, response) => {
     var colValues = Object.keys(request.body).map(function (key) {
         return request.body[key];
     });
+    
     console.log("columnValues :: "+colValues)
     pool.query(query, colValues, (error, results) => {
         if (error) {
@@ -68,7 +69,7 @@ const updateScoreCard = (request, response) => {
             console.log(request.body[key]);
             return request.body[key];
         }
-    }).slice(1);
+    });
     console.log(colValues);
     pool.query(query, colValues, (error, results) => {
         if (error) {
@@ -99,9 +100,7 @@ function updateScoreCardByNameQuery(card) {
     // and assigning a number value for parameterized query
     var set = [];
     Object.keys(card).forEach(function (key, i) {
-        if(!(key=='validated')){
-            set.push(camel_to_snake(key) + ' = ($' + (i + 1-1) + ')');
-        }
+            set.push(camel_to_snake(key) + ' = ($' + (i + 1) + ')');
     });
     query.push(set.join(', '));
 
@@ -126,9 +125,8 @@ function insertScoreCardQuery(card) {
     var ref=[];
     Object.keys(card).forEach(function (key, i) {
        console.log('Key recieved ',key)
-      
         set.push(camel_to_snake(key));
-        ref.push(' $' + (i + 1) ); 
+        ref.push(' $' + (i + 1) );
     });
     query.push(set.join(', '));
 
