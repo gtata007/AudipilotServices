@@ -64,8 +64,11 @@ const updateScoreCard = (request, response) => {
     const query = updateScoreCardByNameQuery(scorecard);
     console.log(' updatequery :: ', query)
     var colValues = Object.keys(request.body).map(function (key) {
-        return request.body[key];
-    });
+        if(key!='validated'){
+            console.log(request.body[key]);
+            return request.body[key];
+        }
+    }).slice(1);
     console.log(colValues);
     pool.query(query, colValues, (error, results) => {
         if (error) {
@@ -96,7 +99,9 @@ function updateScoreCardByNameQuery(card) {
     // and assigning a number value for parameterized query
     var set = [];
     Object.keys(card).forEach(function (key, i) {
-        set.push(camel_to_snake(key) + ' = ($' + (i + 1) + ')');
+        if(!(key=='validated')){
+            set.push(camel_to_snake(key) + ' = ($' + (i + 1-1) + ')');
+        }
     });
     query.push(set.join(', '));
 
