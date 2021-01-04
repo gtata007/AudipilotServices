@@ -65,10 +65,8 @@ const updateScoreCard = (request, response) => {
     const query = updateScoreCardByNameQuery(scorecard);
     console.log(' updatequery :: ', query)
     var colValues = Object.keys(request.body).map(function (key) {
-        if(key!='validated'){
-            console.log(request.body[key]);
-            return request.body[key];
-        }
+            console.log(request.body[key])
+            return request.body[key]
     });
     console.log(colValues);
     pool.query(query, colValues, (error, results) => {
